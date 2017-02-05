@@ -1,0 +1,35 @@
+---
+author: xsstomy
+date: 2015-12-10 20:28:39+00:00
+layout: post
+title: Mac OS X 自定义快捷键启动任意软件
+pid: 7
+tags:
+- Mac
+- OS X 
+- 快捷键
+- 终端
+---
+
+
+最近一直在玩终端,但是每次启动都要先Spotlight -> 输入ter -> enter 打开终端感觉很快，突然有一天想到是否有快捷键可以一键打开终端，结果谷歌了一下还真有，于是就有了这篇简单的教程博客。本人系统是**10.11.1**版本
+
+1. 打开自带的Automator(可以用右上角Spotlight搜索找到)
+![](/uploads/2015/12/10/7/automator.png)
+
+2. 选择 "新建文稿",在创建界面选择"服务"
+![](/uploads/2015/12/10/7/service.png)
+
+3. 左侧列表中,找到:操作—资源库—实用工具—开启应用程序,右侧选择"没有输入",最后双击"开启应用程序"
+![](/uploads/2015/12/10/7/service.png)
+
+4. 在新出现的界面里选择需要的应用程序，例如这里选择了"终端"(实用工具－终端app)
+![](/uploads/2015/12/10/7/terminal.png)
+
+5. 保存(cmd+s),随便起个你能记得住的名字。这里起名"Open Terminal"
+![](/uploads/2015/12/10/7/save.png)
+
+6. 打开:系统偏好设置-键盘-快捷键-服务-找到刚才起名的"Open Terminal"
+![](/uploads/2015/12/10/7/end.jpg)
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

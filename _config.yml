@@ -57,7 +57,7 @@ time_format: HH:mm:ss
 
 # Pagination
 ## Set per_page to 0 to disable pagination
-per_page: 100
+per_page: 0
 pagination_dir: page
 
 # Extensions
@@ -68,4 +68,8 @@ theme: maupassant
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git 
+  repository:
+      github: git@github.com:xsstomy/xsstomy.github.io.git,master
+      coding: git@git.coding.net:xsstomy/xsstomy.git,coding-pages
+      

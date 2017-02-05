@@ -1,0 +1,124 @@
+---
+author: xsstomy
+date: 2016-08-28 02:28:39+00:00
+layout: post
+title: reactjs 学习到项目生产的总结
+pid: 1
+tags:
+- react
+---
+
+### 前言
+
+接触Reactjs差不多四个多月了,从最初的学习到最终的项目生产(webapp),多多少少有一些经验和积累,不一定是最佳方案,目前对于自己来说用着还是不错的。如果你有更好的实践,欢迎留言讨论,另因为一直没有找到合适的UI库,目前的webapp所需要的组件还不多,没有使用UI库,都是自己写的。
+现在正好有时间,于是整理一下,对自己这段时间的一个小小的总结,同时也希望能帮助到一些有需要的人。
+这篇大概分两块:
+一,学习资料的整理
+二,自己在学习和使用过程中遇到的一些问题的整理
+
+### 学习资料
+
+##### 1.React入门资料 
+- [官方文档](https://facebook.github.io/react/)
+- [阮一峰简单入门概念](http://www.ruanyifeng.com/blog/2015/03/react)
+- [英文资料简单入门](https://github.com/mikechau/react-primer-draft)
+
+##### 2.其它知识 
+
+- [Webpack官方文档](http://webpack.github.io/docs/)
+- [Webpack官方tutorial](http://webpack.github.io/docs/tutorials/getting-started/)
+- [Webpack入门到上线](https://segmentfault.com/a/1190000006649986)
+- [Webpack常用功能](https://segmentfault.com/a/1190000004172052)
+- [ECMA-262标准](http://www.ecma-international.org/ecma-262/6.0/)
+- [ES2015-babeljs](https://babeljs.io/docs/learn-es2015/)
+- [ES2015-cn](https://github.com/fengzilong/es6features-zhCN)
+
+##### 3.数据管理
+- [Flux官方文档](https://facebook.github.io/flux/docs/overview.html#content)
+- [Redux官方文档](http://redux.js.org/docs/introduction/)
+- [Flux入门-cn](https://segmentfault.com/a/1190000002777101#articleHeader0)
+- [redux-tutorial](https://github.com/happypoulp/redux-tutorial)
+- [redux-tutorial-cn](https://github.com/react-guide/redux-tutorial-cn)
+- [Redux作者录制视频教程](https://egghead.io/courses/getting-started-with-redux)
+
+##### 4.CSS在React中的使用
+
+- [CSS-Modules](https://github.com/css-modules/css-modules)
+- [CSS-Modules使用教程](https://zhuanlan.zhihu.com/p/20495964)
+
+##### 5.UI库
+
+- [ant **适合后台开发**的UI库](http://ant.design/docs/spec/introduce)
+
+##### 6.手机端适配
+- [淘宝适配库和教程](https://github.com/amfe/article/issues/17)
+- [腾讯适配,使用rem](http://www.alloyteam.com/2016/03/mobile-web-adaptation-tool-rem/)
+
+##### 7.项目实战
+
+- [react-starter-kit](https://github.com/kriasoft/react-starter-kit)
+
+- [Create a character voting app using React, Node.js, MongoDB and Socket.IO](http://sahatyalkabov.com/create-a-character-voting-app-using-react-nodejs-mongodb-and-socketio/)
+
+- [使用React、Node.js、MongoDB、Socket.IO开发一个角色投票应用-cn](http://www.kancloud.cn/kancloud/create-voting-app/63976)
+
+- [awesome-react 资源](https://github.com/enaqx/awesome-react)
+
+##### 8.优化发布上线
+
+- [按需加载](http://www.alloyteam.com/2016/02/code-split-by-routes/)
+
+##### 9.开发过程中工具(chrome 插件,需要科学上网)
+
+- [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
+- [Redux Developer Tools](http://zalmoxisus.github.io/redux-devtools-extension/)
+
+
+##### 10. vistual dom 的简单实现
+
+- [中文](https://github.com/livoras/blog/issues/13)
+- [英文](https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060#.16vb88o6p)
+
+> 两篇文章不是一样
+
+
+
+### 个人开发中遇到的坑
+
+##### 1.字体大小适配
+
+设计稿是**750x1334**(iphone6 && iphone6s的分辨率来定的)
+在使用[淘宝适配方案](https://github.com/amfe/article/issues/17)过程中(rem适配),图片大小适配的挺好的,但是字体出现了严重的问题。字体最开始按照教程来的,字体单位使用px,然而字体在安卓机部分机型(分辨率高于等于**1920x1080**)上,字体显示的异常的大,等不到想要的结果。最后的解决方案,字体依然使用**rem**单位,才解决此问题。因为此问题已经解决,本人这里暂时没有截图保留。如果大家遇到字体问题,可以试着使用**rem**作为字体的单位.
+
+
+##### 2.ES2015兼容性问题
+
+在开发过程中使用ES2015 的新特性是比较爽的,但是因为安卓手机碎片化的问题,以及国内部分手机浏览器的更新问题,很多特性是没有支持的,所以在使用新特性的时候,特别要注意兼容性的问题。这里放一个[网址](http://caniuse.com/)方便大家查看某属性的支持情况。名字特别好记,分can,i,use 。本人在使用过程中遇到过一个坑,之前写过的微信调试过程,就是在遇到坑的情况下写的。
+
+
+##### 3.Flux 重构 为 Redux
+
+在 Redux 中, state 的定义是比较重要的。与React中的state的概念可以说不完全相同。在最开始重构的时候,完全懵逼,不理解state如何定义。在Redux中,定义state,其实state就是带有数据的全局变量,注意这里的全局变量。React中的state是组件的,是无法在组件之间进行传递的。这里可能后期会写一篇博客介绍,Flux 到 Redux的重构。
+
+##### 4.打包发布
+
+在一次配置PostCSS中,开发模式正常,但是发布总是出现问题,加载不了CSS模块,最后查了好久。原来是Node.js的问题,更新到最新版本就可以正常发布了。
+
+##### 5.单页应用微信支付
+
+我们先定义两个名词：首先把当前页面叫做“Current Page”；当我们从微信别的地方点击链接呼出微信浏览器时所落在的页面、或者点击微信浏览器的刷新按钮时所刷新的页面，我们叫做“Landing Page”。举个例子，我们从任何地方点击链接进入页面A，然后依次浏览到B、C、D，那么Current Page就是D，而Landing Page是A，如果此时我们在D页面点击一下浏览器的刷新按钮，那么Landing Page就变成了D（以上均是在单页应用的环境下，即以hashbang模式通过js更改浏览器路径，直接href跳转的不算）。
+
+问题来了，在ios和安卓下呼出微信支付的时候，微信支付判断当前路径的规则分别是：
+
+IOS：Landing Page
+安卓：Current Page
+
+[更多详细](http://www.kejik.com/article/152868.html)
+
+##### 6.微信相关
+
+[其它人的总结](http://www.liball.me/wxpay-is-shit/)
+
+
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

@@ -1,0 +1,60 @@
+---
+author: xsstomy
+date: 2016-10-03 14:28:39+00:00
+layout: post
+title: vim 初入坑
+pid: 1
+tags:
+- vim
+---
+
+### 前言
+
+生命不止,折腾不息。一不小心开始入vim坑。作为一个出入vim坑的人,首先就是要解决vim配置问题。
+
+### 配置
+解决vim配置问题,需要明确一下此时此刻作为一个vim新人的需求。本人目前只写写**HTML,CSS,JavaScript,ReactJS,Vue,Node.js**的人,目前只需要语法检测和代码提示
+ * 行数显示 
+ * 字体自定义 
+ * 主题自定义 
+ * 语法检测
+ * 代码提示
+ * 项目树状结构
+ * 文件搜索
+
+### 插件
+在安装插件之前,我们需要先安装一下插件管理工具,在网上浏览了大量的教程,大部分推荐使用[vundle](https://github.com/VundleVim/Vundle.vim) 管理插件,中文文档可以看[这里](https://github.com/VundleVim/Vundle.vim/blob/master/README_ZH_CN.md)。这里的插件自己可以选择自己需要的就好。
+
+1. 主题 [dracula](https://draculatheme.com/vim/)  最近喜欢此主题,电脑上所有的主题都已设置为此主题
+2. 文件操作 [nerdtree](https://github.com/scrooloose/nerdtree) 非常棒的文件操作插件
+3. 文件查找 [ctrlp](https://github.com/kien/ctrlp.vim) 文件查找,类似sublime 中的cmd(ctrl) + p操作 
+4. CSS语法支持 [vim-css3-syntax](https://github.com/hail2u/vim-css3-syntax)
+5. JavaScritp语法支持 [vim-javascript](https://github.com/pangloss/vim-javascript)
+6. 代码补全 [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) [tern_for_vim](https://github.com/ternjs/tern_for_vim) 语法提示
+
+### 注意
+在安装**YouCompleteMe** 的可能有些复杂可以参考这里的[教程](http://www.jianshu.com/p/4a8b0e3503fa) 
+
+### 参考教程
+
+[AlloyTeam](http://www.alloyteam.com/2013/12/front-end-development-tools-vim-introduce-common-plug-ins/)
+[VIM的JavaScript补全](http://efe.baidu.com/blog/vim-javascript-completion/)
+[每日一vim](http://liuzhijun.iteye.com/category/270228)
+
+### 学习教程
+[youtube视频教程](https://www.youtube.com/watch?v=5givLEMcINQ&list=PL13bz4SHGmRxlZVmWQ9DvXo1fEg4UdGkr)
+[练习教程](http://www.openvim.com/tutorial.html)
+
+
+
+
+
+
+test 
+
+
+![](/uploads/2016/10/03/show.png)
+
+
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

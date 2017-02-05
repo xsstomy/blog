@@ -1,0 +1,67 @@
+---
+author: xsstomy
+date: 2016-3-5 20:28:39+00:00
+layout: post
+title:  electron环境搭建到项目发布
+pid: 16
+tags:
+- electron
+---
+
+## 前言
+最近了解到electron，于是去简单的研究了一下。网上找个详细的教程，没有找到比较全的，然后就把整个流程简单的记录一下，方便需要的人。
+
+
+## 环境搭建
+笔者这里使用的Mac，osx 10.11.3 ，在安装electron环境之前，确保本机已经安装**Node.js**,**Git**并确保尽可能的是最新的版本。笔者这里的Node版本4.2.2，Git版本2.5.4。
+
+### 1.切换镜像
+按照官方的教程，是无法正常运行的这里，我们需要使用一下淘宝的镜像([这里感谢淘宝](http://npm.taobao.org/))。这里我们在终端执行以下命令：
+
+```
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+```
+
+### 2.安装electron
+
+在终端执行以下命令
+
+```
+cnpm install electron-prebuilt -g
+```
+
+### 3.获取官方实例
+在终端执行以下命令或者直接到[https://github.com/atom/electron-quick-start](https://github.com/atom/electron-quick-start)下载整个项目
+
+```
+git clone https://github.com/atom/electron-quick-start
+```
+
+## 发布项目
+
+### 1.安装打包工具
+因为我们需要将我们的源代码进行混淆打包，免得别人看到源码。我们在终端执行
+
+```
+npm install -g asar
+```
+
+### 2.打包项目
+
+命令 `asar pack|p [options] <dir> <output> `
+
+这里在终端进到刚才下载的官方例子文件夹外,执行以下命令：
+
+```
+asar p electron-quick-start app
+```
+
+然后修改打包后的文件后缀，修改为app.asar。这里说明的是一定要以app为打包文件名称。打包之后然后到[https://github.com/atom/electron/releases](https://github.com/atom/electron/releases)。笔者这里是Mac系统，下载的是electron-v0.36.10-darwin-x64.zip。解压，把app.asar拷贝到`Electron.app/Contents/Resources/resource`下,其它的不要做任何修改,到此算是完成源代码打包。
+
+
+还有修改应用名称，icon待续。。。
+
+
+
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

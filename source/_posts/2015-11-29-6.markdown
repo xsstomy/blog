@@ -1,0 +1,19 @@
+---
+author: xsstomy
+date: 2015-11-29 00:28:39+00:00
+layout: post
+title: Git教程整理
+pid: 6
+tags:
+- git
+- git命令
+- git教程
+---
+
+一直在使用git，但是一直是可视化工具使用，没有具体的使用命令行，今天就系统的整理学习了一下。以下是贴图
+
+![](/uploads/2015/11/29/6/git.png)
+
+[pdf教程](https://github.com/xsstomy/xsstomy.github.io/blob/master/uploads/2015/11/29/6/Git%E6%95%99%E7%A8%8B.pdf)
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

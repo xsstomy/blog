@@ -1,0 +1,38 @@
+---
+author: xsstomy
+date: 2016-10-13 02:28:39+00:00
+layout: post
+title: 如何编写你自己的virtual dom
+pid: 1
+tags:
+- react
+- virtual dom
+---
+
+## 前言
+最近需要了解virtual dom, 查了一下网上的资料。发现比较好的文章，翻译也已经有人翻译好了。然后这里就做一个简单的记录。文章链接在最后。
+
+## 原理概述
+
+virtual dom, 主要的实现原理就是用JavaScript 中的{}对象，来实现一个与树真实的dom树对应的模拟树，然后每次更新找出不同之处，进而来操作真实的dom树。
+
+## 总结
+
+研究理论和原理发现，最终回归到算法。
+算法和数据结构才是重点。
+
+## 引用
+
+[如何实现一个 Virtual DOM 算法](https://github.com/livoras/blog/issues/13)
+
+
+[How to write your own Virtual DOM](https://medium.com/@deathmood/how-to-write-your-own-virtual-dom-ee74acc13060#.16vb88o6p)
+[中文对照翻译](http://huangbingbing.com/2016/06/17/%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0-Virtual-DOM/)
+
+[react 设计原理](https://github.com/reactjs/react-basic)
+
+
+[virtual dom diff](https://github.com/Matt-Esch/virtual-dom/blob/master/vtree/diff.js)
+
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

@@ -1,0 +1,535 @@
+---
+author: xsstomy
+date: 2016-1-24 20:28:39+00:00
+layout: post
+title:  gulp在egret引擎中使用教程
+pid: 14
+tags:
+- egret
+- gulp
+---
+
+
+### 缘由
+
+作为一名伪前端攻城师，还是有必要学习一下前端工具和前端框架的。于是自己就折腾了一下，通过在egret引擎中使用gulp，来学习gulp的使用。这里是别人已经收集整理好的，gulp比较齐全的资料[https://github.com/Platform-CUF/use-gulp](https://github.com/Platform-CUF/use-gulp)
+
+
+### gulp简介
+
+Gulp.js 是一个自动化构建工具，开发者可以使用它在项目开发过程中自动执行常见任务。Gulp.js 是基于 Node.js 构建的，利用 Node.js 流的威力，你可以快速构建项目并减少频繁的 IO 操作。Gulp.js 源文件和你用来定义任务的 Gulp 文件都是通过 JavaScript（或者 CoffeeScript ）源码来实现的。
+
+在egret中，这里就是希望使用它编译TypeScript文件，虽然egret已经做了一些封装，满足了基本的需求，这里完全就是自己折腾，用前端工具，做一些定制化的操作。然后实现一些定制化的功能，比如压缩资源。比如模块编译。等等。
+
+
+
+
+### gulp安装
+
+#### 1.全局安装gulp：
+
+` $ npm install gulp -g `
+
+> 如果安装失败，前面可以添加一个sudo
+> 
+> `sudo npm install gulp -g`
+> 
+> 因为可能被国内的某些原因，无法正常安装。大家可以安装[淘宝镜像](http://npm.taobao.org/)。
+
+#### 2.作为项目的开发依赖（devDependencies）安装：
+
+在egret项目根目录下，命令行中输入以下命令:
+
+`npm install --save-dev gulp`
+
+> 这里是到项目根目录安装的。即egret项目的根目录。
+
+在egret项目根目录创建gulpfile.js文件。代码
+
+```
+var gulp = require('gulp');
+gulp.task('default', function() {
+  // 将你的默认的任务代码放在这
+  
+  console.log("hello gulp")
+});
+
+```
+
+在egret项目根目录下，命令行中输入:`gulp` , 
+终端输出内容中会有单独的一行，显示内容为` hello gulp`;
+
+
+#### 3.编译TypeScript
+
+在egret中，输入egret  build  则egret引擎会构建项目，TypeScript文件生成对应JavaScript文件，文件生成的目录是bin-debug。
+
+在这里使用gulp来构建，我们同样默认还是生成在bin-debug文件目录下。
+在egret项目根目录下，命令行中输入以下命令:
+
+`npm install --save-dev gulp-typescript`
+
+在egret中，构建项目使用的命令是egret  build ,这里我们就创建一个build任务,gulpfile.js编写代码。
+
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript')
+gulp.task('default', function() {
+  // 将你的默认的任务代码放在这
+   console.log("hello gulp");
+});
+
+//创建一个build 任务
+gulp.task('build', function() {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+        	  "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+```
+
+在egret项目根目录下，命令行中输入: gulp build ,
+我们查看对应的bin-debug目录下的JavaScript文件，是完全对应TypeScript文件生成的。
+这里我们就实现了egret  build 功能。
+
+> 这里在终端输入gulp build 时候，终端会输出比较多的错误提示，说是没有引用对应的库文件。
+> 接下来我们解决这个报错问题，我们引用新的gulp插件，直接调用egret默认提供的命令。
+
+
+在egret项目根目录下，命令行中输入以下命令:
+
+`npm install --save-dev gulp-shell`
+
+我们用shell脚本，调用egret引擎默认提供的命令功能。在gulpfile.js中编写对应的代码。
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript');
+var shell = require('gulp-shell');
+
+gulp.task('default', function () {
+    // 将你的默认的任务代码放在这
+    console.log("hello gulp");
+});
+
+
+gulp.task('build', function () {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+            "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+//调用egret run －a 命令,实现增量编译
+gulp.task('run', function(){
+   gulp.src('')
+   .pipe(shell([
+       'egret build -e',
+       'egret run -a'
+   ]))
+    
+});
+
+```
+
+#### 4.发布Egret项目
+
+这里我们同样使用egret自带的命令。参考步骤3中编译操作。
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript');
+var shell = require('gulp-shell');
+
+gulp.task('default', function () {
+    // 将你的默认的任务代码放在这
+    console.log("hello gulp");
+});
+
+// gulp build  编译egret项目
+gulp.task('build', function () {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+            "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+//调用 gulp run ,利用egret提供的实现增量编译
+gulp.task('run', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret run -a'
+        ]))
+
+});
+
+
+// 发布 gulp publish
+gulp.task('publish', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret publish ' 
+        ]))
+})
+
+
+```
+
+
+> 发布我们这里基本的已经实现了，但是egret官方提供的可以默认的添加版本号，这里我们用另外的插
+> 件yargs来实现
+
+在egret项目根目录下，命令行中输入以下命令:
+
+`npm install --save-dev yargs`
+
+
+gulpfile.js中添加代码
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript');
+var shell = require('gulp-shell');
+var argv = require('yargs').argv;
+
+gulp.task('default', function () {
+    // 将你的默认的任务代码放在这
+    console.log("hello gulp");
+});
+
+// gulp build  编译egret项目
+gulp.task('build', function () {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+            "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+//调用 gulp run ,利用egret提供的实现增量编译
+gulp.task('run', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret run -a'
+        ]))
+
+});
+
+
+// 发布 gulp publish --version 1000
+gulp.task('publish', function () {
+
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret publish --version ' +argv.version
+        ]))
+})
+
+```
+
+这里，我们就完成了egret提供的基本相同的功能。剩下的就是我们的自定义功能了。
+
+
+#### 5.自定义功能
+
+##### 5.1压缩图片资源
+
+安装压缩插件，在egret项目根目录下，命令行中输入以下命令:
+
+`npm install --save-dev gulp-imagemin`
+
+然后新建一个imagemin的任务，代码:
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript');
+var shell = require('gulp-shell');
+var argv = require('yargs').argv;
+var image = require('gulp-imagemin');
+
+
+gulp.task('default', function () {
+    // 将你的默认的任务代码放在这
+    console.log("hello gulp");
+});
+
+// gulp build  编译egret项目
+gulp.task('build', function () {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+            "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+//调用 gulp run ,利用egret提供的实现增量编译
+gulp.task('run', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret run -a'
+        ]))
+
+});
+
+
+// 发布 gulp publish --version 1000
+gulp.task('publish', function () {
+
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret publish --version ' + argv.version
+        ]))
+})
+
+
+// 压缩图片功能 gulp imagemin
+gulp.task('imagemin', function () {
+    gulp.src('resource/**/*.{png,jpg,gif}')
+        .pipe(image({
+            optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
+            progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+            interlaced: true //类型：Boolean 默认：false 隔行扫描gif进行渲染
+           
+        }))
+        .pipe(gulp.dest('bin-release/resource'));
+});
+
+
+```
+
+
+配合imagemin-pngquant 来实现深度压缩资源。
+安装压缩插件，在egret项目根目录下，命令行中输入以下命令:
+
+`npm install imagemin-pngquant --save-dev`
+
+然后修改一下资源压缩代码
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript');
+var shell = require('gulp-shell');
+var argv = require('yargs').argv;
+var image = require('gulp-imagemin');
+var pngquant = require('imagemin-pngquant');
+
+gulp.task('default', function () {
+    // 将你的默认的任务代码放在这
+    console.log("hello gulp");
+});
+
+// gulp build  编译egret项目
+gulp.task('build', function () {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+            "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+//调用 gulp run ,利用egret提供的实现增量编译
+gulp.task('run', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret run -a'
+        ]))
+
+});
+
+
+// 发布 gulp publish --version 1000
+gulp.task('publish', function () {
+
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret publish --version ' + argv.version
+        ]))
+})
+
+
+// 压缩图片功能 gulp imagemin
+gulp.task('imagemin', function () {
+    gulp.src('resource/**/*.{png,jpg,gif}')
+        .pipe(image({
+            optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
+            progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+            use: [pngquant()]//使用pngquant深度压缩png图片的imagemin插件
+        }))
+        .pipe(gulp.dest('bin-release/resource'));
+});
+
+```
+
+这里的压缩是全部压缩，如何实现增量压缩资源，这里使用其它的插件来实现。
+安装压缩插件，在egret项目根目录下，命令行中输入以下命令:
+
+`npm install gulp-cache --save-dev`
+
+修改gulpfile.js代码
+
+```
+var gulp = require('gulp');
+var ts = require('gulp-typescript');
+var shell = require('gulp-shell');
+var argv = require('yargs').argv;
+var image = require('gulp-imagemin');
+var pngquant = require('imagemin-pngquant');
+var cache = require('gulp-cache');
+
+gulp.task('default', function () {
+    // 将你的默认的任务代码放在这
+    console.log("hello gulp");
+});
+
+// gulp build  编译egret项目
+gulp.task('build', function () {
+    // 1. 找到文件
+    gulp.src('src/**/*.ts')
+    // 2. 编译TypeScript文件
+        .pipe(ts({
+            "compilerOptions": {
+                "target": "ES6",
+                "outDir": "bin-debug",
+                "sourceMap": true
+            },
+            "exclude": [
+                "bin-debug",
+                "bin-release",
+                "resource"
+            ]
+        }))
+    // 3. 保存编译后的文件
+        .pipe(gulp.dest('bin-debug'));
+})
+
+//调用 gulp run ,利用egret提供的实现增量编译
+gulp.task('run', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret run -a'
+        ]))
+
+});
+
+
+// 发布 gulp publish --version 1000
+gulp.task('publish', function () {
+    gulp.src('')
+        .pipe(shell([
+            'egret build -e',
+            'egret publish --version ' + argv.version
+        ]))
+})
+
+
+// 压缩图片功能 gulp imagemin
+gulp.task('imagemin', function () {
+    gulp.src('resource/**/*.{png,jpg,gif}')
+        .pipe(cache(image({
+            optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
+            progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+            use: [pngquant()]//使用pngquant深度压缩png图片的imagemin插件
+        })))
+        .pipe(gulp.dest('bin-release/resource'));//压缩资源后的保存路径，这里可以填写发布后的路径
+});
+
+```
+
+
+
+
+#####  5.2添加版本控制
+
+
+
+未完待续...
+
+
+
+![](/uploads/mypictures/xsstomyzhifubao.png)

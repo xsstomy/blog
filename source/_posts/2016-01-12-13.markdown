@@ -1,0 +1,439 @@
+---
+author: xsstomy
+date: 2016-1-12-13 02:28:39+00:00
+layout: post
+title: egret(前端)＋Node.js(后端)实现跨屏互动教程 
+pid: 13
+tags:
+- egret
+- node.js
+- 跨屏互动
+---
+
+## 原理讲解
+
+
+![](/uploads/2016/1/12/13/yuanli.png)
+
+### 图讲解
+
+#### server端
+
+server端主要做信息接收和传递以及一些处理。可以理解为一个中转站。
+
+#### show端
+
+show端就是一个展示端，比如小霸王游戏机中需要的显示器。
+
+#### control端
+
+control端就好像小霸王游戏中的手柄，来操作游戏。
+
+通信协议websocket
+
+### 流程讲解
+
+1. show端。生成一个随机数(xxx)，作为自己唯一的ID验证。同时连接server服务器并把自己ID传输过去，标记此WebSocket连接为show端。
+
+2. server端，记录步骤1中，连接过来的show端，同时记录ID(xxx)和身份标记show端。
+
+3. 手机扫描show端游戏页面的二维码(二维码包含show端生成的随机数ID),打开control端，连接server服务器端。
+
+4. server端，对步骤3连接的WebSocket进行判断，通过ID，把show端和control端连接起来。同时标记此WebSocket为control端。
+
+5. 这两个WebSocket连接就连接起来了，就可以进行通信，信息数据交流了。
+
+说明：为什么要有唯一的ID呢，因为这里的demo是一个show端对应一个control端的需求。可以满足多个人，同时打开show端，然后拿起手机扫描二维码，进行游戏操作。(这里如果想做多人控制一个比如，多人同时摇手机，给加油鼓劲。)
+
+
+## 服务端代码
+
+```
+var controlArr = new Array();//记录所有control端的连接
+var showArr = new Array();//记录所有show端的连接
+
+var ws = require('./node_modules/nodejs-websocket');
+var server = ws.createServer(function (connection) {
+	connection.data = null;
+	connection.type = null;
+	console.log("new connetion");
+	console.log("连接数connection = " + server.connections.length);
+	//接收数据
+	connection.on("text", function (str) {
+		var data = JSON.parse(str);
+		console.log("userid =",data.userid,"type =",data.type);
+		if (connection.data === null) {
+			
+			/**
+			 * 1.判断链接是control端还是show端
+			 * 2.如果是control端，且是第一次发送消息，什么都不做
+			 * 3.如果是control端，不是第一次发送消息，那给所有的show端发送消息请求，游戏开始。
+			 * 4.show端接受消息，对应的唯一show端，做相对应的处理，并返回消息。
+			 * 5.游戏正式开始
+			 */
+
+			if (data.type == "control") {
+				controlArr.push(connection);
+			} else if (data.type == "show") {
+				showArr.push(connection);
+			}
+			
+			connection.userid = data.userid;
+			connection.type = data.type;
+
+
+			//如果是第一次发送消息什么都不做。
+			if (data.event == "HelloWebSocket") {
+				return;
+			}
+			
+			//如果发送消息的是控制端
+			if (data.type == "control") {
+				var msg1 = { userid: connection.userid, type: connection.type, event: data.event, leftOrRight: data.leftOrRight };
+				var sendMsg1 = JSON.stringify(msg1);
+				sendMessageToShow(sendMsg1);
+
+			}
+
+			//如果发送消息的是show端
+			if(data.type == "show")
+			{
+				var msg2 = { userid: connection.userid, type: connection.type, event: data.event, leftOrRight: data.leftOrRight };
+				var sendMsg2 = JSON.stringify(msg2);
+				sendMessageToControl(sendMsg2);
+			}
+
+		} else {
+			broadcast("[" + connection.userid + "] " + connection.userid);
+			console.log("connection.userid = " + connection.userid);
+		}
+
+	});
+
+	connection.on("close", function () {
+		var data = { userid: connection.userid, type: connection.type, event: "leave", leftOrRight: "null" };
+		var str = JSON.stringify(data);
+		broadcast(str);
+		console.log("userid =",data.userid,"type =",data.type," close");
+
+		console.log("连接数connection = " + server.connections.length);
+	});
+
+	connection.on("error", function () {
+		if (connection.type == "control") {
+			var indexControl = controlArr.indexOf(connection);
+			if (indexControl != -1) {
+				controlArr.splice(indexControl, 1);
+
+			}
+		}
+		if (connection.type == "show") {
+			var indexShow = controlArr.indexOf(connection);
+			if (indexShow != -1) {
+				controlArr.splice(indexShow, 1);
+
+			}
+		}
+
+	});
+})
+server.listen(8001);
+/**
+ * 
+ * 发送消息到所有连接
+ */
+function broadcast(str) {
+	server.connections.forEach(function (connection) {
+		connection.sendText(str);
+	})
+}
+/**
+ * 
+ * 发送消息到control(控制)端
+ */
+function sendMessageToControl(str) {
+	server.connections.forEach(function (connection) {
+		if (connection.type == "control") {
+			connection.sendText(str);
+		}
+	})
+}
+/**
+ * 
+ * 发送消息到show(表现)端
+ */
+function sendMessageToShow(str) {
+	server.connections.forEach(function (connection) {
+		if (connection.type == "show") {
+			connection.sendText(str);
+		}
+	})
+}
+
+console.log("服务器启动");
+```
+
+### 模块介绍
+
+这里使用的是别人封装好的模块[nodejs-websocket](https://www.npmjs.com/package/nodejs-websocket),点击链接,可以查看详细的API介绍和使用方法的介绍。
+
+这里就只介绍整个操作流程，从创建过程到代码的编写。请先确保电脑已经安装nodejs，如果不会安装请谷歌或者百度,[官网链接](https://nodejs.org/en/)
+
+安装之后，全局安装nodejs-websocket。在终端执行`sudo npm install nodejs-websocket -g`。更详细的教程查看[这里](https://github.com/sitegui/nodejs-websocket)
+
+我这里使用的是Mac系统，如果不是Mac系统，大家可以对比一下查看。
+
+### 操作步骤
+
+#### 1.安装依赖模块
+打开终端,输入cd,然后拖拽文件目录,回车
+
+![](/uploads/2016/1/12/13/1.png)
+
+输入`mkdir crossscreen && cd crossscreen`，这里是创建crossscreen文件夹并进入crossscreen文件夹
+
+![](/uploads/2016/1/12/13/2.png)
+
+输入`mkdir server && cd server`，这里是创建server文件夹并进入server文件夹
+
+![](/uploads/2016/1/12/13/3.png)
+
+输入`npm install nodejs-websocket`,然后回车,安装成功终端应该是这样的
+
+![](/uploads/2016/1/12/13/4.png)
+
+系统文件目录应该是这样的
+
+![](/uploads/2016/1/12/13/5.png)
+
+这里说一下，有的Mac可能执行的图不是和我这里表现的一样，因为我这里安装了[zsh](http://ohmyz.sh/)
+
+
+#### 2.编写server.js代码
+
+因为这里编辑纯js代码，这里使用的编辑器是VS code.
+
+把server文件夹下内容导入VS code,然后创建server.js文件。
+
+![](/uploads/2016/1/12/13/6.png)
+
+接下来，大家就可以把代码拷贝到我们创建的server.js里面。
+
+如果想运行server.js ,直接在终端输入`node server.js` 中间隔着空格,记住要在server文件夹下，或者直接拖拽到终端也行。
+结果应该是这样的。
+
+![](/uploads/2016/1/12/13/7.png)
+
+#### 3.代码讲解
+
+```
+var ws = require('./node_modules/nodejs-websocket');
+```
+引用依赖库
+
+```
+var server = ws.createServer(function (connection) {
+	
+	})
+	
+	server.listen(8001);
+```
+创建server,监听8001端口。
+
+
+```
+connection.on("text", function (str) {});
+connection.on("close", function (str) {});
+connection.on("error", function (str) {});
+```
+
+监听传送过来的数据
+监听连接关闭
+监听连接错误
+
+## 扩展思路
+
+### 数据格式
+
+数据格式，这里使用的是使用的JSON来传送数据。如果想在egret中使用`protobuf`,请查看[这里](http://www.cnblogs.com/yangxiao/p/4686729.html)
+
+因为这里比较简单所以就是定义的如下格式，这个可以根据自己的习惯来定。
+
+```
+{
+	"userid": "",
+	"type": "",
+	"event": "",
+	"data": ""
+}
+```
+
+声明类 `Message`
+
+```
+class Message {
+	constructor(userid:string,event:string,type:string,data:string) {
+		this.userid = userid;
+		this.type = type;
+		this.event = event;
+		this.data = null;
+	}
+	userid:string = null;
+	type:string = null;//  "show" or "control"
+	event:string = null;// "gameStart"
+	data:string = null;//“left”，“right”
+}
+```
+
+利用`JSON.parse(),JSON.stringify()`来转换。
+
+### WebSocket
+
+```
+class WebSocket {
+	constructor() {
+
+	}
+
+	static instance: WebSocket = new WebSocket();
+	webSocket: egret.WebSocket = new egret.WebSocket();
+	
+	static getInstance(): MyWebSocket {
+	
+		return WebSocket.instance;
+	}
+	//初始化
+	init(url:string,port:any): void {
+		//接收消息
+		this.webSocket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMessage, this);
+		//连接
+		this.webSocket.addEventListener(egret.Event.CONNECT, this.onSocketOpen, this);
+		
+		this.webSocket.connect(url, port);
+		//添加链接关闭侦听，手动关闭或者服务器关闭连接会调用此方法
+        this.webSocket.addEventListener(egret.Event.CLOSE, this.onSocketClose, this);
+        //添加异常侦听，出现异常会调用此方法
+        this.webSocket.addEventListener(egret.IOErrorEvent.IO_ERROR, this.onSocketError, this);
+	}
+	
+	/**
+	 * 连接成功
+	 */
+	private onSocketOpen(): void {
+		var cmd = new Message(GlobalData.userid,"HelloWebSocket","show","null");
+		var msg = JSON.stringify(cmd);
+		console.log("连接成功，发送数据：" + msg);
+		
+		this.webSocket.writeUTF(msg);
+	}
+	/**
+	 * 传送数据
+	 */
+	sendMesssage(str:string)
+	{
+		this.webSocket.writeUTF(str);
+		this.webSocket.flush();
+	}
+	/**
+	 * 接收消息
+	 */
+	onReceiveMessage(e: egret.Event): void {
+		var msg = this.webSocket.readUTF();
+		var event = new game.SceneEvent(game.SceneEvent.ChangeScene);//自定义的事件来传送数据
+
+		event.eventData = JSON.parse(msg); //转换字符串为JSON格式
+
+		if(GlobalData.userid == event.eventData.userid)// 判断是否是属于同一组连接
+		game.ViewManager.getInstance().dispatchEvent(event)
+	}
+
+	private onSocketClose(): void {
+        console.log("WebSocketClose");
+    }
+
+    private onSocketError(): void {
+        console.log("WebSocketError");
+    }
+
+}
+
+```
+更多的使用方式查看[API](http://edn.egret.com/cn/apidoc/index/name/egret.WebSocket);
+
+### 二维码
+
+二维码使用的库是[https://github.com/cxh612/qrCode](https://github.com/cxh612/qrCode)
+
+具体的使用功能可以查看readme.md
+
+### 解析URL
+
+API 使用[egret.getOption](http://edn.egret.com/cn/apidoc/index/name/egret.globalFunction#getOption)
+
+### 扩展思路
+
+1. 手机做遥感，pc做显示器。
+2. 体感游戏，手机做感应器，pc做显示端。
+3. 两个手机，情侣之间，朋友之间的对抗赛，同步屏幕操作。
+
+
+## 代码部署
+
+### 说在之前
+
+因为个人的一些习惯癖好，不喜欢PHP，写起来感觉好难受。再一个Node.js又比较火，又可以使用TypeScript来编写，于是很愉快的决定使用Node.js了。写玩之后，发现找一个支持node.js的服务器好难，在这个上面折腾了好久。游戏1天半差不多就写完了，结果部署折腾了快一个星期的时间，因为不是很懂服务器，没有办法。最后只好找同学来指点一下，然后就自己折腾去了。最后买了阿里云。
+
+### 服务器
+
+我这里购买的是阿里云，配置的镜像是Ubuntu 14.04 64位。因为个人相比而言，相对于来说偏向Linux服务器，对于Ubuntu 更熟悉一些。这个根据个人的习惯爱好就行。有兴趣的，可以先在本地电脑安装虚拟机，然后安装Ubuntu。如果你不愿意折腾，那就直接购买就好了。如果购买阿里云，可以到网上找一些优惠码，这个阿里云还是固定发送一些的。我的推荐码xy0glk [阿里云购买地址](https://ecs-buy.aliyun.com/#/prepay)
+
+
+![](/uploads/2016/1/12/13/8.png)
+
+
+### 安装Node.js
+
+因为只当服务器使用，这里说一下安装Node.js，在Ubuntu下，node 这个命令可能被占用，一般使用nodejs 命令.如果不想换,继续使用node命令,那么查看[这里](http://blchen.com/solution-for-ubuntu-node-command-invalid/)。[具体的操作可以查看这里](http://mclspace.com/2015/12/09/aliyun-build-nodejs-environment/)
+
+### sftp上传
+
+这里使用的是Yummy FTP,购买阿里云之后会给你发一份邮件给你。
+![](/uploads/2016/1/12/13/9.png)
+
+输入IP，用户名，端口号,然后就可以连接了。
+
+![](/uploads/2016/1/12/13/10.png)
+
+然后上传服务器端代码
+![](/uploads/2016/1/12/13/11.png)
+
+然后进入终端连接，启动服务器端代码,[更详细的教程](https://help.aliyun.com/knowledge_detail/5974445.html?spm=5176.775974781.0.0.dqguq5)
+
+![](/uploads/2016/1/12/13/12.png)
+
+
+
+
+
+![](/uploads/mypictures/xsstomyzhifubao.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
