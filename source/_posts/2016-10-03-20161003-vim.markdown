@@ -5,7 +5,7 @@ layout: post
 title: vim 初入坑
 pid: 1
 tags:
-- vim
+- Vim
 ---
 
 ### 前言

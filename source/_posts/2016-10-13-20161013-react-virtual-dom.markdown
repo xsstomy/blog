@@ -5,8 +5,8 @@ layout: post
 title: 如何编写你自己的virtual dom
 pid: 1
 tags:
-- react
-- virtual dom
+- React
+- Virtual Dom
 ---
 
 ## 前言

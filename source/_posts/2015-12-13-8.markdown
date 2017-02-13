@@ -5,9 +5,8 @@ layout: post
 title: 杂谈Egret引擎之初探
 pid: 8
 tags:
-- egret
-- 白鹭引擎
-- egret引擎
+- Egret
+categories: Egret
 ---
 
 ### 缘由

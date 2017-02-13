@@ -5,7 +5,6 @@ layout: post
 title: 设计模式
 pid: 12
 tags:
-- 设计模式
 - 设计模式之蝉
 ---
 

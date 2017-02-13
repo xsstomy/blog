@@ -5,8 +5,9 @@ layout: post
 title:  gulp在egret引擎中使用教程
 pid: 14
 tags:
-- egret
-- gulp
+- Egret
+- Gulp
+categories: Egret
 ---
 
 

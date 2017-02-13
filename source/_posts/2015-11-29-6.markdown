@@ -5,9 +5,8 @@ layout: post
 title: Git教程整理
 pid: 6
 tags:
-- git
-- git命令
-- git教程
+- Git
+
 ---
 
 一直在使用git，但是一直是可视化工具使用，没有具体的使用命令行，今天就系统的整理学习了一下。以下是贴图

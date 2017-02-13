@@ -6,9 +6,7 @@ title: Mac OS X 自定义快捷键启动任意软件
 pid: 7
 tags:
 - Mac
-- OS X 
 - 快捷键
-- 终端
 ---
 
 

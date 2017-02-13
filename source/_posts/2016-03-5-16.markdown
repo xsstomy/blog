@@ -5,7 +5,7 @@ layout: post
 title:  electron环境搭建到项目发布
 pid: 16
 tags:
-- electron
+- Electron
 ---
 
 ## 前言

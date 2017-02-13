@@ -5,7 +5,7 @@ layout: post
 title: reactjs 学习到项目生产的总结
 pid: 1
 tags:
-- react
+- React
 ---
 
 ### 前言

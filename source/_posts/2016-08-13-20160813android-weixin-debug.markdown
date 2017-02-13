@@ -5,7 +5,7 @@ layout: post
 title: 手机微信端调试
 pid: 18
 tags:
-- reactjs
+- React
 - 微信
 - 调试
 ---

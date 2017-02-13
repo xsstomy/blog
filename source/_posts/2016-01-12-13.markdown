@@ -5,9 +5,10 @@ layout: post
 title: egret(前端)＋Node.js(后端)实现跨屏互动教程 
 pid: 13
 tags:
-- egret
-- node.js
+- Egret
+- Node.js
 - 跨屏互动
+categories: Egret
 ---
 
 ## 原理讲解

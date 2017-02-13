@@ -5,8 +5,9 @@ layout: post
 title: Sublime+iTerm2+EgretWing2.5+Webpack+ResDepot+chrome个人工作流
 pid: 17
 tags:
-- egret
+- Egret
 - 工作流
+categories: Egret
 ---
 
 ## 前言
